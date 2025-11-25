@@ -1,8 +1,9 @@
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class Spawner : MonoBehaviour
 {
-    [SerializeField] private Transform ballPf;
+    public BallSO[] ballSOs;
 
     [SerializeField] private float spawnInterval = 1f;
     private float timer;
@@ -10,22 +11,28 @@ public class Spawner : MonoBehaviour
     [SerializeField] private float spawnHeight = 10f;
     [SerializeField] private float spawnRangeX = 4f;
 
+    [SerializeField] private Vector2 maxForceAngles;
+
     private void Update()
     {
         if (timer >= spawnInterval)
         {
             Vector2 spawnPos = new Vector2(Random.Range(-spawnRangeX, spawnRangeX), spawnHeight);
-            Instantiate(ballPf, spawnPos, Quaternion.identity);
+            float angle = Random.Range(maxForceAngles.x, maxForceAngles.y);
+            BallSO ball = ballSOs[Random.Range(0, ballSOs.Length)];
+            Ball.CreateBall(ball, spawnPos, angle);
             timer = 0f;
         }
         else
         {
             timer += Time.deltaTime;
         }
+    }
 
-        //if (Input.GetMouseButtonDown(0))
-        //{
-        //    Instantiate(ballPf, Mouse2D.GetMouseWorldPosition(), Quaternion.identity);
-        //}
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+
+        Gizmos.DrawLine(new Vector2(-spawnRangeX, spawnHeight), new Vector2(spawnRangeX, spawnHeight));
     }
 }
