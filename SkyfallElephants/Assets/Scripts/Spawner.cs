@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class Spawner : MonoBehaviour
 {
@@ -13,8 +12,22 @@ public class Spawner : MonoBehaviour
 
     [SerializeField] private Vector2 maxForceAngles;
 
+    [SerializeField] private bool canSpawn = false;
+
+    private void Start()
+    {
+        GameManager.i.OnGameStateChanged += GameManager_OnGameStateChanged;
+    }
+
+    private void GameManager_OnGameStateChanged(GameState state)
+    {
+        canSpawn = state == GameState.Playing;
+    }
+
     private void Update()
     {
+        if (!canSpawn) return;
+
         if (timer >= spawnInterval)
         {
             Vector2 spawnPos = new Vector2(Random.Range(-spawnRangeX, spawnRangeX), spawnHeight);

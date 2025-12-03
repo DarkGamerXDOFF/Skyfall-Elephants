@@ -3,7 +3,6 @@ using UnityEngine;
 public class Ball : MonoBehaviour
 {
     [SerializeField] private BallSO ballSO;
-    [SerializeField] private float destroyDelay = 2f;
     [SerializeField] private float moveForce = 5f;
     [SerializeField] private float forceAngle;
 
@@ -23,6 +22,11 @@ public class Ball : MonoBehaviour
         ball.MoveObject();
     }
 
+    public void RemoveBall()
+    {
+        Destroy(gameObject);
+    }
+
     private void MoveObject()
     {
         float angle = forceAngle * Mathf.Deg2Rad;
@@ -34,7 +38,7 @@ public class Ball : MonoBehaviour
         if (collision.gameObject.CompareTag("Ground"))
         {
             GameManager.i.LoseLife();
-            Destroy(gameObject);
+            RemoveBall();
         }
     }
 
@@ -43,7 +47,7 @@ public class Ball : MonoBehaviour
         if (collision.CompareTag("Basket"))
         {
             ScoreManager.i.AddScore(ballSO.pointValue);
-            Destroy(gameObject);
+            RemoveBall();
         }
     }
 }

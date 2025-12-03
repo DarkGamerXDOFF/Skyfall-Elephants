@@ -1,5 +1,5 @@
 using UnityEngine;
-using TMPro;
+using System;
 
 public class ScoreManager : MonoBehaviour
 {
@@ -7,36 +7,89 @@ public class ScoreManager : MonoBehaviour
 
     [SerializeField] private int score = 0;
 
-    [SerializeField] private TMP_Text scoreText;
+    [SerializeField] private int highScore = 0;
+
+    public Action<int> OnScoreChanged;
+
+    [SerializeField] private bool updateHighScore;
+
+    [SerializeField] private ParticleSystem[] confettiPS;
 
     private void Awake()
     {
-        if (i == null)
-        {
-            i = this;
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
+        if (i == null) i = this;
+        else Destroy(gameObject);
 
-        UpdateScore();
+        highScore = PlayerPrefs.GetInt("HighScore", 0);
     }
 
-    private void UpdateScore()
+    private void Start()
     {
-        scoreText.text = score.ToString();
+        GameManager.i.OnGameStateChanged += GameManager_OnGameStateChanged;
+    }
+
+    private void PlayConfetti()
+    {
+        if (confettiPS != null && confettiPS.Length > 0)
+        {
+            foreach (ParticleSystem ps in confettiPS)
+            {
+                ps.Play();
+            }
+        }
+    }
+
+    private void GameManager_OnGameStateChanged(GameState state)
+    {
+        if (state == GameState.GameOver)
+        {
+            CheckHighScore();
+            updateHighScore = false;
+        }
     }
 
     public void AddScore(int amount)
     {
         score += amount;
-        UpdateScore();
+        OnScoreChanged?.Invoke(score);
+
+        if (score > highScore && !updateHighScore)
+        {
+            if (highScore > 0)
+                PlayConfetti();
+            Debug.Log($"New High Score: {score}");
+            updateHighScore = true;
+        }
+    }
+
+    public void CheckHighScore()
+    {
+        if (updateHighScore)
+        {
+            highScore = score;
+            //Save high score to persistent storage 
+            PlayerPrefs.SetInt("HighScore", highScore);
+            PlayerPrefs.Save();
+        }
+    }
+
+    public int GetHighScore()
+    {
+        //Load the current highest score from persistent storage
+        highScore = PlayerPrefs.GetInt("HighScore", 0);
+
+        return highScore;
     }
 
     public void ResetScore()
     {
         score = 0;
-        UpdateScore();
+        OnScoreChanged?.Invoke(score);
+    }
+
+    private void ResetHighScore()
+    {
+        PlayerPrefs.DeleteKey("HighScore");
+        highScore = 0;
     }
 }

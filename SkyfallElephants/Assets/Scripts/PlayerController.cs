@@ -8,14 +8,29 @@ public class PlayerController : MonoBehaviour
 
     private Rigidbody2D rb;
 
+    [SerializeField] private bool canMove;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
     }
 
+    private void Start()
+    {
+        GameManager.i.OnGameStateChanged += GameManager_OnGameStateChanged;
+    }
+
+    private void GameManager_OnGameStateChanged(GameState state)
+    {
+        canMove = state == GameState.Playing;
+    }
+
     private void Update()
     {
-        moveInput = Input.GetAxisRaw("Horizontal");
+        if (canMove)
+            moveInput = Input.GetAxisRaw("Horizontal");
+        else
+            moveInput = 0f;
     }
 
     private void FixedUpdate()
