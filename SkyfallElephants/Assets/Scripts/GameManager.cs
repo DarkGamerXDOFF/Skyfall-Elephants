@@ -25,6 +25,11 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private void Start()
+    {
+        MenuManager.i.OpenMenu("Main");
+    }
+
     public void LoseLife()
     {
         lives--;
@@ -38,6 +43,7 @@ public class GameManager : MonoBehaviour
     public void GameOver()
     {
         SetGameState(GameState.GameOver);
+        MenuManager.i.OpenMenu("Main");
         ResetBalls();
     }
 
@@ -63,12 +69,10 @@ public class GameManager : MonoBehaviour
                     StartGame();
                     break;
                 case GameState.Playing:
-                    SetGameState(GameState.Paused);
-                    Time.timeScale = 0;
+                    SetPause(true);
                     break;
                 case GameState.Paused:
-                    Time.timeScale = 1;
-                    SetGameState(GameState.Playing);
+                    SetPause(false);
                     break;
                 case GameState.GameOver:
                     StartGame();
@@ -82,6 +86,7 @@ public class GameManager : MonoBehaviour
     private void StartGame()
     {
         ScoreManager.i.ResetScore();
+        MenuManager.i.OpenMenu("Game");
         ResetLives();
         SetGameState(GameState.Playing);
     }
@@ -90,6 +95,22 @@ public class GameManager : MonoBehaviour
     {
         lives = 3;
         OnLivesChanged?.Invoke(lives);
+    }
+
+    public void SetPause(bool isPaused)
+    {
+        if (isPaused)
+        {
+            MenuManager.i.OpenMenu("Pause");
+            SetGameState(GameState.Paused);
+            Time.timeScale = 0;
+        }
+        else
+        {
+            MenuManager.i.OpenMenu("Game");
+            Time.timeScale = 1;
+            SetGameState(GameState.Playing);
+        }
     }
 
     private void SetGameState(GameState newState)

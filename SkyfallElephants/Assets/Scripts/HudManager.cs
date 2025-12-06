@@ -1,13 +1,15 @@
 using UnityEngine;
 using TMPro;
-using System.Runtime.CompilerServices;
+using UnityEngine.UI;
 
 public class HudManager : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI infoText;
     [SerializeField] private TMP_Text scoreText;
-    [SerializeField] private TextMeshProUGUI livesText;
     [SerializeField] private TextMeshProUGUI highScoreText;
+    [SerializeField] private Image[] hearts;
+    [SerializeField] private Color fullHeartColor = Color.red;
+    [SerializeField] private Color emptyHeartColor = Color.gray;
 
 
     private void Start()
@@ -22,7 +24,17 @@ public class HudManager : MonoBehaviour
 
     private void GameManager_OnLivesChanged(int lives)
     {
-        livesText.text = $"Lives:{lives}";
+        for (int i = 0; i < hearts.Length; i++)
+        {
+            if (i < lives)
+            {
+                hearts[i].color = fullHeartColor;
+            }
+            else
+            {
+                hearts[i].color = emptyHeartColor;
+            }
+        }
     }
 
     private void ScoreManager_OnScoreChanged(int score)
@@ -51,10 +63,9 @@ public class HudManager : MonoBehaviour
                 UpdateHighScoreText(0);
                 break;
             case GameState.Paused:
-                infoText.text = "Paused\nPress SPACE to Resume";
                 break;
             case GameState.GameOver:
-                infoText.text = "Game Over\nPress SPACE to Restart";
+                infoText.text = "Press SPACE to Restart";
                 UpdateHighScoreText(ScoreManager.i.GetHighScore());
                 break;
             default:

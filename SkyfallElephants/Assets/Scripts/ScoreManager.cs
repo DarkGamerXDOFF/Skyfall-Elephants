@@ -87,9 +87,10 @@ public class ScoreManager : MonoBehaviour
         OnScoreChanged?.Invoke(score);
     }
 
-    private void ResetHighScore()
+    public void ResetHighscore()
     {
-        PlayerPrefs.DeleteKey("HighScore");
         highScore = 0;
+        PlayerPrefs.SetInt("HighScore", highScore);
+        PlayerPrefs.Save();
     }
 }
