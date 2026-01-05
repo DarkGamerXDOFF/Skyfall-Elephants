@@ -1,5 +1,7 @@
 using System;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.Scripting.APIUpdating;
 
 public class GameManager : MonoBehaviour
 {
@@ -13,6 +15,8 @@ public class GameManager : MonoBehaviour
 
     public Action<int> OnLivesChanged;
 
+    public static PlayerInputActions playerInputActions;
+
     private void Awake()
     {
         if (i == null)
@@ -23,6 +27,10 @@ public class GameManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
+        playerInputActions = new PlayerInputActions();
+        playerInputActions.Player.Enable();
+        playerInputActions.Player.Interact.performed += GameManager_Interact;
     }
 
     private void Start()
@@ -59,7 +67,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void Update()
+    private void GameManager_Interact(InputAction.CallbackContext context)
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {

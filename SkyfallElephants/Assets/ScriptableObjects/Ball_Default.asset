@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BallSO
   ballPf: {fileID: 1918277464710461572, guid: 2a0399220356c9f4b9cdaad4761d1525, type: 3}
   pointValue: 1
-  moveForce: 10
+  moveForce: 0

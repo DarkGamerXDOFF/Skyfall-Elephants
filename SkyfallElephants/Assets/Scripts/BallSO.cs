@@ -5,5 +5,4 @@ public class BallSO : ScriptableObject
 {
     public GameObject ballPf;
     public int pointValue = 1;
-    public float moveForce = 5f;
 }

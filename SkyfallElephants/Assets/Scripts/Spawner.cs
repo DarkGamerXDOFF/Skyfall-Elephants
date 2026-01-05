@@ -2,6 +2,10 @@ using UnityEngine;
 
 public class Spawner : MonoBehaviour
 {
+
+    private enum SpawnMode { timeInterval, queue}
+    [SerializeField] private SpawnMode spawnMode;
+
     public BallSO[] ballSOs;
 
     [SerializeField] private float spawnInterval = 1f;
@@ -13,6 +17,8 @@ public class Spawner : MonoBehaviour
     [SerializeField] private Vector2 maxForceAngles;
 
     [SerializeField] private bool canSpawn = false;
+
+    private Ball activeBall;
 
     private void Start()
     {
@@ -28,18 +34,37 @@ public class Spawner : MonoBehaviour
     {
         if (!canSpawn) return;
 
-        if (timer >= spawnInterval)
+
+        switch (spawnMode)
         {
-            Vector2 spawnPos = new Vector2(Random.Range(-spawnRangeX, spawnRangeX), spawnHeight);
-            float angle = Random.Range(maxForceAngles.x, maxForceAngles.y);
-            BallSO ball = ballSOs[Random.Range(0, ballSOs.Length)];
-            Ball.CreateBall(ball, spawnPos, angle);
-            timer = 0f;
+            case SpawnMode.timeInterval:
+                if (timer >= spawnInterval)
+                {
+                    Vector2 spawnPos = new Vector2(Random.Range(-spawnRangeX, spawnRangeX), spawnHeight);
+                    float angle = Random.Range(maxForceAngles.x, maxForceAngles.y);
+
+                    BallSO ball = ballSOs[Random.Range(0, ballSOs.Length)];
+                    Ball.CreateBall(ball, spawnPos, Random.Range(-5f, 5f));
+                    timer = 0f;
+                }
+                else
+                {
+                    timer += Time.deltaTime;
+                }
+                break;
+            case SpawnMode.queue:
+                if (activeBall == null)
+                {
+                    Vector2 spawnPos = new Vector2(Random.Range(-spawnRangeX, spawnRangeX), spawnHeight);
+                    BallSO ball = ballSOs[Random.Range(0, ballSOs.Length)];
+                    activeBall = Ball.CreateBall(ball, spawnPos, Random.Range(-5f, 5f));
+                }
+                break;
+            default:
+                break;
         }
-        else
-        {
-            timer += Time.deltaTime;
-        }
+
+        
     }
 
     private void OnDrawGizmosSelected()
