@@ -2,30 +2,34 @@ using UnityEngine;
 
 public class Spawner : MonoBehaviour
 {
-
-    private enum SpawnMode { timeInterval, queue}
+    private enum SpawnMode { TimeInterval, Queue }
     [SerializeField] private SpawnMode spawnMode;
 
-    public BallSO[] ballSOs;
+    [Header("Ball Setup")]
+    [SerializeField] private BallSO[] ballSOs;
 
+    [Header("Spawn Timing")]
     [SerializeField] private float spawnInterval = 1f;
     private float timer;
 
-    [SerializeField] private float spawnHeight = 10f;
+    [Header("Spawn Area")]
+    [SerializeField] private float spawnHeight = 9f;
     [SerializeField] private float spawnRangeX = 4f;
 
-    [SerializeField] private Vector2 maxForceAngles;
+    [Header("Horizontal Drift")]
+    [SerializeField] private float baseDrift = 1f;
+    [SerializeField] private float rareDriftMultiplier = 2.5f;
+    [SerializeField, Range(0f, 1f)] private float rareDriftChance = 0.2f;
 
-    [SerializeField] private bool canSpawn = false;
-
+    private bool canSpawn = false;
     private Ball activeBall;
 
     private void Start()
     {
-        GameManager.i.OnGameStateChanged += GameManager_OnGameStateChanged;
+        GameManager.i.OnGameStateChanged += OnGameStateChanged;
     }
 
-    private void GameManager_OnGameStateChanged(GameState state)
+    private void OnGameStateChanged(GameState state)
     {
         canSpawn = state == GameState.Playing;
     }
@@ -34,43 +38,57 @@ public class Spawner : MonoBehaviour
     {
         if (!canSpawn) return;
 
-
         switch (spawnMode)
         {
-            case SpawnMode.timeInterval:
-                if (timer >= spawnInterval)
-                {
-                    Vector2 spawnPos = new Vector2(Random.Range(-spawnRangeX, spawnRangeX), spawnHeight);
-                    float angle = Random.Range(maxForceAngles.x, maxForceAngles.y);
+            case SpawnMode.TimeInterval:
+                HandleTimedSpawn();
+                break;
 
-                    BallSO ball = ballSOs[Random.Range(0, ballSOs.Length)];
-                    Ball.CreateBall(ball, spawnPos, Random.Range(-5f, 5f));
-                    timer = 0f;
-                }
-                else
-                {
-                    timer += Time.deltaTime;
-                }
-                break;
-            case SpawnMode.queue:
-                if (activeBall == null)
-                {
-                    Vector2 spawnPos = new Vector2(Random.Range(-spawnRangeX, spawnRangeX), spawnHeight);
-                    BallSO ball = ballSOs[Random.Range(0, ballSOs.Length)];
-                    activeBall = Ball.CreateBall(ball, spawnPos, Random.Range(-5f, 5f));
-                }
-                break;
-            default:
+            case SpawnMode.Queue:
+                HandleQueueSpawn();
                 break;
         }
+    }
 
-        
+    private void HandleTimedSpawn()
+    {
+        timer += Time.deltaTime;
+        if (timer < spawnInterval) return;
+
+        SpawnBall();
+        timer = 0f;
+    }
+
+    private void HandleQueueSpawn()
+    {
+        if (activeBall == null)
+            activeBall = SpawnBall();
+    }
+
+    private Ball SpawnBall()
+    {
+        Vector2 spawnPos = new Vector2(
+            Random.Range(-spawnRangeX, spawnRangeX),
+            spawnHeight
+        );
+
+        BallSO ballSO = ballSOs[Random.Range(0, ballSOs.Length)];
+
+        float drift = Random.Range(-baseDrift, baseDrift);
+        if (Random.value < rareDriftChance)
+        {
+            drift *= rareDriftMultiplier;
+        }
+
+        return Ball.CreateBall(ballSO, spawnPos, drift);
     }
 
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
-
-        Gizmos.DrawLine(new Vector2(-spawnRangeX, spawnHeight), new Vector2(spawnRangeX, spawnHeight));
+        Gizmos.DrawLine(
+            new Vector2(-spawnRangeX, spawnHeight),
+            new Vector2(spawnRangeX, spawnHeight)
+        );
     }
 }
