@@ -7,11 +7,16 @@ public class BallSO : ScriptableObject
     public BallBehavior behavior = BallBehavior.Normal;
 
     [Header("Prefab")]
-    //public GameObject ballPf;
+    public Sprite ballSprite;
     public Color ballColor = Color.white;
+    [Range(0, 5f)]
+    public float maxSpawnRange = 4.5f;
+    [Range(0, 5f)]
+    public float minSpawnRange = 0f;
 
     [Header("Scoring")]
     public int pointValue = 1;
+    public bool winLife = false;
 
     [Header("Physics")]
     public float gravityScale = 1.5f;
@@ -30,6 +35,5 @@ public enum BallBehavior
     Normal,
     Heavy,
     Floater,
-    LateDriftBoost,
-    Split
+    Life
 }

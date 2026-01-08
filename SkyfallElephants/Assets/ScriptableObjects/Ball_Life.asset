@@ -10,16 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7ce9a0b48f2283e45a9817bd4c22ba25, type: 3}
-  m_Name: Ball_Floater
+  m_Name: Ball_Life
   m_EditorClassIdentifier: Assembly-CSharp::BallSO
-  behavior: 2
-  ballSprite: {fileID: 21300000, guid: ab7a3eaf581e81945a9f89b0ce66fb33, type: 3}
-  ballColor: {r: 1, g: 1, b: 1, a: 1}
-  maxSpawnRange: 2
-  minSpawnRange: 0
-  pointValue: 1
-  winLife: 0
-  gravityScale: 0.85
-  maxHorizontalSpeed: 6
+  behavior: 3
+  ballSprite: {fileID: 21300000, guid: db2dfd454edc29746ab342e5e2c8aef6, type: 3}
+  ballColor: {r: 0.9254902, g: 0.043137256, b: 0.2627451, a: 1}
+  maxSpawnRange: 3.75
+  minSpawnRange: 2.75
+  pointValue: 0
+  winLife: 1
+  gravityScale: 1.8
+  maxHorizontalSpeed: 0.5
   horizontalAcceleration: 6
   scaleMultiplier: 1

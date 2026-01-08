@@ -1,7 +1,6 @@
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Scripting.APIUpdating;
 
 public class GameManager : MonoBehaviour
 {
@@ -11,7 +10,10 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private GameState currentState = GameState.WaitingToStart;
 
-    [SerializeField] private int lives = 3;
+    public int MaxLives => maxLives;
+    [SerializeField] private int maxLives = 3;
+    public int CurrentLives => currentLives;
+    [SerializeField] private int currentLives = 3;
 
     public Action<int> OnLivesChanged;
 
@@ -20,13 +22,9 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         if (i == null)
-        {
             i = this;
-        }
         else
-        {
             Destroy(gameObject);
-        }
 
         playerInputActions = new PlayerInputActions();
         playerInputActions.Player.Enable();
@@ -40,12 +38,19 @@ public class GameManager : MonoBehaviour
 
     public void LoseLife()
     {
-        lives--;
-        if (lives <= 0)
+        currentLives--;
+        if (currentLives <= 0)
         {
             GameOver();
         }
-        OnLivesChanged?.Invoke(lives);
+        OnLivesChanged?.Invoke(currentLives);
+    }
+
+    public void GainLife()
+    {
+        if (currentLives >= maxLives) return;
+        currentLives++;
+        OnLivesChanged?.Invoke(currentLives);
     }
 
     public void GameOver()
@@ -96,13 +101,14 @@ public class GameManager : MonoBehaviour
         ScoreManager.i.ResetScore();
         MenuManager.i.OpenMenu("Game");
         ResetLives();
+        Spawner.i.InitializeQueue();
         SetGameState(GameState.Playing);
     }
 
     private void ResetLives()
     {
-        lives = 3;
-        OnLivesChanged?.Invoke(lives);
+        currentLives = maxLives;
+        OnLivesChanged?.Invoke(currentLives);
     }
 
     public void SetPause(bool isPaused)

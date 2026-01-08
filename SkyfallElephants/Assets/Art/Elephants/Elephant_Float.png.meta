@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: db2dfd454edc29746ab342e5e2c8aef6
+guid: ab7a3eaf581e81945a9f89b0ce66fb33
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 4606908045521496030
-    second: Heart_0
+      213: -6758071019637217365
+    second: Elephant_Float_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Heart_0
+      name: Elephant_Float_0
       rect:
         serializedVersion: 2
-        x: 117
-        y: 113
-        width: 280
-        height: 259
+        x: 5
+        y: 76
+        width: 502
+        height: 360
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: ed7a23e75760fef30800000000000000
-      internalID: 4606908045521496030
+      spriteID: ba769a3a6328632a0800000000000000
+      internalID: -6758071019637217365
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Heart_0: 4606908045521496030
+      Elephant_Float_0: -6758071019637217365
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

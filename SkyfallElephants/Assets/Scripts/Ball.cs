@@ -5,7 +5,6 @@ public class Ball : MonoBehaviour
     [SerializeField] private BallSO ballSO;
 
     [Header("Movement")]
-    [SerializeField] private float maxHorizontalSpeed = 3f;
     [SerializeField] private float horizontalAcceleration = 6f;
 
     [Header("Removal")]
@@ -23,6 +22,8 @@ public class Ball : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
     }
+
+    public BallSO GetBallSO() => ballSO;
 
     // Factory method
     public static Ball CreateBall(BallSO ballSO, Vector2 position, float initialHorizontalDirection)
@@ -43,9 +44,10 @@ public class Ball : MonoBehaviour
     {
         rb.gravityScale = ballSO.gravityScale;
         transform.localScale *= ballSO.scaleMultiplier;
-        spriteRenderer.color = ballSO.ballColor;   
 
-        maxHorizontalSpeed = ballSO.maxHorizontalSpeed;
+        spriteRenderer.sprite = ballSO.ballSprite;
+        spriteRenderer.color = ballSO.ballColor;
+
         horizontalAcceleration = ballSO.horizontalAcceleration;
     }
 
@@ -109,7 +111,8 @@ public class Ball : MonoBehaviour
 
         if (collision.gameObject.CompareTag("Ground"))
         {
-            GameManager.i.LoseLife();
+            if (!ballSO.winLife)
+                GameManager.i.LoseLife();
             RemoveBall();
         }
         else if (collision.gameObject.CompareTag("Ceiling"))
@@ -125,7 +128,11 @@ public class Ball : MonoBehaviour
         if (collision.CompareTag("Basket"))
         {
             ScoreManager.i.AddScore(ballSO.pointValue);
+            if (ballSO.winLife)
+                GameManager.i.GainLife();
+
             AudioManager.i.PlaySfx("Catch");
+            
             RemoveBall();
         }
     }

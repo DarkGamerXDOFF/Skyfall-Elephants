@@ -1,16 +1,25 @@
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using System.Linq;
 
 public class Spawner : MonoBehaviour
 {
+    public static Spawner i;
+
     private enum SpawnMode { TimeInterval, Queue }
     [SerializeField] private SpawnMode spawnMode;
 
     [Header("Ball Setup")]
     [SerializeField] private BallSO[] ballSOs;
+    [SerializeField] private BallSO lifeBallSO;
 
     [Header("Spawn Timing")]
     [SerializeField] private float spawnInterval = 1f;
     private float timer;
+    
+    [Range(0, 1f)] [SerializeField]
+    private float maxLifeSpawnChance = 0.1f;
 
     [Header("Spawn Area")]
     [SerializeField] private float spawnHeight = 9f;
@@ -23,6 +32,17 @@ public class Spawner : MonoBehaviour
 
     private bool canSpawn = false;
     private Ball activeBall;
+
+    [SerializeField] private Image[] ballQueueRenderers;
+    private Queue<BallSO> nextBallSOs;
+
+    private void Awake()
+    {
+        if (i == null) i = this;
+        else Destroy(this);
+
+        nextBallSOs = new Queue<BallSO>();
+    }
 
     private void Start()
     {
@@ -50,6 +70,39 @@ public class Spawner : MonoBehaviour
         }
     }
 
+    public void InitializeQueue()
+    {
+        nextBallSOs.Clear();
+
+        for (int i = 0; i < ballQueueRenderers.Length; i++)
+        {
+            EnqueueRandomBall();
+        }
+
+        UpdateQueueUI();
+    }
+
+    private void EnqueueRandomBall()
+    {
+        BallSO randomBall = null;
+
+        if (GameManager.i.CurrentLives < GameManager.i.MaxLives)
+        {
+            if (!nextBallSOs.Any(t => t.behavior == BallBehavior.Life))
+            {
+                if (Random.value <= maxLifeSpawnChance)
+                {
+                    randomBall = lifeBallSO;
+                    nextBallSOs.Enqueue(randomBall);
+                    return;
+                }
+            }
+        }
+
+        randomBall = ballSOs[Random.Range(0, ballSOs.Length)];
+        nextBallSOs.Enqueue(randomBall);
+    }
+
     private void HandleTimedSpawn()
     {
         timer += Time.deltaTime;
@@ -67,13 +120,17 @@ public class Spawner : MonoBehaviour
 
     private Ball SpawnBall()
     {
+        BallSO ballSO = nextBallSOs.Dequeue();
+        EnqueueRandomBall();
+        UpdateQueueUI();
+
+        bool otherSide = Random.value < 0.5f;
+
         Vector2 spawnPos = new Vector2(
-            Random.Range(-spawnRangeX, spawnRangeX),
+            Random.Range(ballSO.minSpawnRange, ballSO.maxSpawnRange) * (otherSide ? -1 : 1),
             spawnHeight
         );
-
-        BallSO ballSO = ballSOs[Random.Range(0, ballSOs.Length)];
-
+        
         float drift = Random.Range(-baseDrift, baseDrift);
         if (Random.value < rareDriftChance)
         {
@@ -81,6 +138,16 @@ public class Spawner : MonoBehaviour
         }
 
         return Ball.CreateBall(ballSO, spawnPos, drift);
+    }
+
+    private void UpdateQueueUI()
+    {
+        for (int i = 0; i < ballQueueRenderers.Length; i++)
+        {
+            ballQueueRenderers[i].sprite = nextBallSOs.ToArray()[i].ballSprite;
+            ballQueueRenderers[i].color = nextBallSOs.ToArray()[i].ballColor;
+            ballQueueRenderers[i].transform.localScale = Vector3.one * nextBallSOs.ToArray()[i].scaleMultiplier / 1.5f;
+        }
     }
 
     private void OnDrawGizmosSelected()

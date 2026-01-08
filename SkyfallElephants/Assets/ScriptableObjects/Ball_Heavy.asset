@@ -13,9 +13,13 @@ MonoBehaviour:
   m_Name: Ball_Heavy
   m_EditorClassIdentifier: Assembly-CSharp::BallSO
   behavior: 1
-  ballColor: {r: 0.54509807, g: 0.93333334, b: 0.7529412, a: 1}
+  ballSprite: {fileID: 21300000, guid: 041382e10425c03469e4b994030c3c16, type: 3}
+  ballColor: {r: 1, g: 1, b: 1, a: 1}
+  maxSpawnRange: 3
+  minSpawnRange: 1
   pointValue: 2
-  gravityScale: 1.75
+  winLife: 0
+  gravityScale: 1.5
   maxHorizontalSpeed: 1
   horizontalAcceleration: 6
   scaleMultiplier: 1.5
