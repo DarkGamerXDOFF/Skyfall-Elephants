@@ -8,6 +8,7 @@ TagManager:
   - Ground
   - Basket
   - Ceiling
+  - Wall
   layers:
   - Default
   - TransparentFX

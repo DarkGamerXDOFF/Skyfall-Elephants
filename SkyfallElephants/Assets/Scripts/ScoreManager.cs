@@ -56,8 +56,10 @@ public class ScoreManager : MonoBehaviour
         if (score > highScore && !updateHighScore)
         {
             if (highScore > 0)
+            {
                 PlayConfetti();
-            Debug.Log($"New High Score: {score}");
+                AudioManager.i.PlaySfx("Highscore");
+            }
             updateHighScore = true;
         }
     }
@@ -91,6 +93,7 @@ public class ScoreManager : MonoBehaviour
     {
         highScore = 0;
         PlayerPrefs.SetInt("HighScore", highScore);
+        GameManager.i.InfoSeen = false;
         PlayerPrefs.Save();
     }
 }

@@ -19,6 +19,28 @@ public class GameManager : MonoBehaviour
 
     public static PlayerInputActions playerInputActions;
 
+    [SerializeField] private bool infoSeen = false; 
+
+    public bool InfoSeen
+    {
+        get
+        {
+            int prefValue = PlayerPrefs.GetInt("InfoSeen", 0);
+            infoSeen = prefValue == 1 ? true : false;
+            return infoSeen;
+        }
+        set 
+        {
+            infoSeen = value;
+            if (infoSeen)
+                PlayerPrefs.SetInt("InfoSeen", 1);
+            else
+                PlayerPrefs.SetInt("InfoSeen", 0);
+            PlayerPrefs.Save();
+        }
+        
+    }
+
     private void Awake()
     {
         if (i == null)
@@ -33,7 +55,10 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        MenuManager.i.OpenMenu("Main");
+        if (!InfoSeen)
+            MenuManager.i.OpenMenu("Info");
+        else
+            MenuManager.i.OpenMenu("Main");
     }
 
     public void LoseLife()
@@ -43,6 +68,9 @@ public class GameManager : MonoBehaviour
         {
             GameOver();
         }
+        else 
+            AudioManager.i.PlaySfx("Fall");
+        
         OnLivesChanged?.Invoke(currentLives);
     }
 
@@ -55,6 +83,7 @@ public class GameManager : MonoBehaviour
 
     public void GameOver()
     {
+        AudioManager.i.PlaySfx("GameOver");
         SetGameState(GameState.GameOver);
         MenuManager.i.OpenMenu("Main");
         ResetBalls();
@@ -94,6 +123,7 @@ public class GameManager : MonoBehaviour
                     break;
             }
         }
+        AudioManager.i.PlaySfx("Interact");
     }
 
     private void StartGame()

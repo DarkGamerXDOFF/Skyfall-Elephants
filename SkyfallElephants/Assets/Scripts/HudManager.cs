@@ -19,7 +19,7 @@ public class HudManager : MonoBehaviour
         ScoreManager.i.OnScoreChanged += ScoreManager_OnScoreChanged;
 
         ScoreManager_OnScoreChanged(0);
-        UpdateHighScoreText(0);
+        UpdateHighScoreText(ScoreManager.i.GetHighScore());
     }
 
     private void GameManager_OnLivesChanged(int lives)

@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class Ball : MonoBehaviour
 {
@@ -17,10 +18,16 @@ public class Ball : MonoBehaviour
 
     [SerializeField] private bool ease = false;
 
+    [SerializeField] private float maxRotationSpeed = 270f;
+    [SerializeField] private float minRotationSpeed = 90;
+    private float rotationSpeed = 0f;
+    private float rotationAngle = 0f;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        rotationSpeed = Random.Range(minRotationSpeed, maxRotationSpeed) * (Random.value < 0.5f ? -1f : 1f);
     }
 
     public BallSO GetBallSO() => ballSO;
@@ -68,6 +75,9 @@ public class Ball : MonoBehaviour
         );
 
         rb.linearVelocity = velocity;
+
+        rotationAngle = (rotationAngle + rotationSpeed * Time.deltaTime) % 360f;
+        transform.rotation = Quaternion.Euler(0f, 0f, rotationAngle);
     }
 
     #region Removal Logic
@@ -109,15 +119,22 @@ public class Ball : MonoBehaviour
     {
         if (isRemoving) return;
 
+        
+
         if (collision.gameObject.CompareTag("Ground"))
         {
             if (!ballSO.winLife)
                 GameManager.i.LoseLife();
+
             RemoveBall();
         }
         else if (collision.gameObject.CompareTag("Ceiling"))
         {
             RemoveBall();
+        }
+        else if (collision.gameObject.CompareTag("Wall"))
+        {
+            AudioManager.i.PlaySfx("Bounce");
         }
     }
 
@@ -129,9 +146,13 @@ public class Ball : MonoBehaviour
         {
             ScoreManager.i.AddScore(ballSO.pointValue);
             if (ballSO.winLife)
+            {
                 GameManager.i.GainLife();
+                AudioManager.i.PlaySfx("HeartGain");
+            }
+            else
+                AudioManager.i.PlaySfx("Catch");
 
-            AudioManager.i.PlaySfx("Catch");
             
             RemoveBall();
         }

@@ -173,3 +173,5 @@ MonoBehaviour:
   horizontalAcceleration: 6
   shrinkDuration: 0.15
   ease: 1
+  maxRotationSpeed: 200
+  minRotationSpeed: 90

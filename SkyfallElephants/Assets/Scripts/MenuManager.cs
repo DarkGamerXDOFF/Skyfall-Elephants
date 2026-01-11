@@ -57,7 +57,7 @@ public class MenuManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("No previous menu to open.");
+            OpenMenu("Main");
         }
     }
 
